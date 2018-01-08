@@ -24,6 +24,8 @@
         <java.version>1.8</java.version>
 
         <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
+        <immutables.version>2.5.5</immutables.version>
+        <jackson-datatype-jdk8.version>2.6.3</jackson-datatype-jdk8.version>
     </properties>
 
     <dependencies>
@@ -42,6 +44,19 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${springfox-swagger2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>value</artifactId>
+            <version>${immutables.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>${jackson-datatype-jdk8.version}</version>
         </dependency>
 
         <dependency>
