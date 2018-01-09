@@ -26,6 +26,7 @@
         <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
         <immutables.version>2.5.5</immutables.version>
         <jackson-datatype-jdk8.version>2.6.3</jackson-datatype-jdk8.version>
+        <junit-dataprovider.version>1.13.1</junit-dataprovider.version>
     </properties>
 
     <dependencies>
@@ -62,6 +63,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tngtech.java</groupId>
+            <artifactId>junit-dataprovider</artifactId>
+            <version>${junit-dataprovider.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

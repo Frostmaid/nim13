@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 public class GameController {
 
@@ -25,7 +27,12 @@ public class GameController {
 
     @GetMapping("/game/{gameId}")
     public ResponseEntity<Game> getGame(@PathVariable String gameId) {
-        return ResponseEntity.ok(repository.getById(gameId));
+        Optional<Game> byId = repository.findById(gameId);
+        if (byId.isPresent()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(byId.get());
+        }
     }
 
     @PostMapping("/start_game")

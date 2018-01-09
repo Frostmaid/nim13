@@ -49,7 +49,8 @@ public class GameStateMachine {
     }
 
     public Game triggerPlayerRound(String id, int numberOfMatchSticks) {
-        Game game = gameRepository.getById(id);
+        //TODO handle optional
+        Game game = gameRepository.findById(id).get();
         if (game.gameStatus() != GameStatus.WAITING_FOR_USER_INPUT) {
             throw new IllegalArgumentException("This operation is not allowed in status: " + game.gameStatus());
         }

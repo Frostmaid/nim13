@@ -12,8 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Optional;
 import java.util.Random;
 
+import static java.util.Optional.of;
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -52,14 +54,14 @@ public class GameStateMachineTest {
                 .takeMatchSticks(0)
                 .build();
 
-        when(gameRepository.getById(GAME_ID)).thenReturn(new ImmutableGame.Builder()
+        when(gameRepository.findById(GAME_ID)).thenReturn(of(new ImmutableGame.Builder()
                 .id(GAME_ID)
                 .actualPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
                 .computerPlayer(new ComputerPlayer())
                 .gameStatus(GameStatus.WAITING_FOR_USER_INPUT)
                 .matchStickHeap(10)
-                .build());
+                .build()));
 
         Game game = testee.triggerPlayerRound(GAME_ID, 2);
 
@@ -77,14 +79,14 @@ public class GameStateMachineTest {
                 .takeMatchSticks(0)
                 .build();
 
-        when(gameRepository.getById(GAME_ID)).thenReturn(new ImmutableGame.Builder()
+        when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(new ImmutableGame.Builder()
                 .id(GAME_ID)
                 .actualPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
                 .computerPlayer(new ComputerPlayer())
                 .gameStatus(GameStatus.TURN)
                 .matchStickHeap(10)
-                .build());
+                .build()));
 
         try {
             testee.triggerPlayerRound(GAME_ID, 2);
