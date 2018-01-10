@@ -48,9 +48,7 @@ public class GameStateMachine {
         return triggerRound(game);
     }
 
-    public Game triggerPlayerRound(String id, int numberOfMatchSticks) {
-        //TODO handle optional
-        Game game = gameRepository.findById(id).get();
+    public Game triggerPlayerRound(Game game, int numberOfMatchSticks) {
         if (game.gameStatus() != GameStatus.WAITING_FOR_USER_INPUT) {
             throw new IllegalArgumentException("This operation is not allowed in status: " + game.gameStatus());
         }
@@ -86,10 +84,9 @@ public class GameStateMachine {
     }
 
     private Game end(Game game) {
-        //TODO last Player is not victor
         return new ImmutableGame.Builder()
                 .from(game)
-                .victor(game.actualPlayer())
+                .victor(game.lastPlayer())
                 .build();
     }
 

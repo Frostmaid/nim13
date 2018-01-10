@@ -22,8 +22,21 @@ public interface Game {
 
     Player computerPlayer();
 
+    //TODO maybe flag on player?
     Player actualPlayer();
 
     Optional<Player> victor();
+
+    default Player lastPlayer() {
+        if (actualPlayer() == humanPlayer()) {
+            return computerPlayer();
+        }
+
+        if (actualPlayer() == computerPlayer()) {
+            return humanPlayer();
+        }
+
+        throw new IllegalStateException();
+    }
 
 }

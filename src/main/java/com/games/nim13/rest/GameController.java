@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 public class GameController {
@@ -27,22 +28,21 @@ public class GameController {
 
     @GetMapping("/game/{gameId}")
     public ResponseEntity<Game> getGame(@PathVariable String gameId) {
-        Optional<Game> byId = repository.findById(gameId);
-        if (byId.isPresent()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(byId.get());
-        }
+        return repository.findById(gameId)
+                .map(ResponseEntity::ok)
+                .orElse(notFound().build());
     }
 
     @PostMapping("/start_game")
     public HttpEntity<Game> startGame() {
-        return ResponseEntity.ok(gameStateMachine.initGame());
+        return ok(gameStateMachine.initGame());
     }
 
     @PostMapping("/take_match_sticks/{gameId}/{numberOfMatchSticks}")
     public HttpEntity<Game> takeMatchSticks(@PathVariable String gameId, @PathVariable int numberOfMatchSticks) {
-        return ResponseEntity.ok(gameStateMachine.triggerPlayerRound(gameId, numberOfMatchSticks));
+        return repository.findById(gameId)
+                .map(game -> ok(gameStateMachine.triggerPlayerRound(game, numberOfMatchSticks)))
+                .orElse(notFound().build());
     }
 
 }

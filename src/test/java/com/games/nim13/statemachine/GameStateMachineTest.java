@@ -12,10 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Optional;
 import java.util.Random;
 
-import static java.util.Optional.of;
+import static com.games.nim13.statemachine.GameStatus.TURN;
+import static com.games.nim13.statemachine.GameStatus.WAITING_FOR_USER_INPUT;
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -44,56 +44,48 @@ public class GameStateMachineTest {
         verify(gameRepository).save(game);
         verify(random).nextInt(2);
 
-        assertThat(game.gameStatus()).isEqualTo(GameStatus.WAITING_FOR_USER_INPUT);
+        assertThat(game.gameStatus()).isEqualTo(WAITING_FOR_USER_INPUT);
         assertThat(game.actualPlayer()).isInstanceOf(HumanPlayer.class);
     }
 
     @Test
     public void triggerPlayerRound() {
-        ImmutableHumanPlayer humanPlayer = new ImmutableHumanPlayer.Builder()
-                .takeMatchSticks(0)
-                .build();
+        Game startingGame = getGameWithStatus(WAITING_FOR_USER_INPUT);
 
-        when(gameRepository.findById(GAME_ID)).thenReturn(of(new ImmutableGame.Builder()
-                .id(GAME_ID)
-                .actualPlayer(humanPlayer)
-                .humanPlayer(humanPlayer)
-                .computerPlayer(new ComputerPlayer())
-                .gameStatus(GameStatus.WAITING_FOR_USER_INPUT)
-                .matchStickHeap(10)
-                .build()));
+        Game resultGame = testee.triggerPlayerRound(startingGame, 2);
 
-        Game game = testee.triggerPlayerRound(GAME_ID, 2);
+        verify(gameRepository).save(resultGame);
 
-        verify(gameRepository).save(game);
-
-        assertThat(game.gameStatus()).isEqualTo(GameStatus.WAITING_FOR_USER_INPUT);
-        assertThat(game.actualPlayer()).isInstanceOf(HumanPlayer.class);
+        assertThat(resultGame.gameStatus()).isEqualTo(WAITING_FOR_USER_INPUT);
+        assertThat(resultGame.actualPlayer()).isInstanceOf(HumanPlayer.class);
         //TODO
         // assertThat(game.matchStickHeap()).isEqualTo(10);
     }
 
     @Test
     public void triggerPlayerRoundInWrongState() {
-        ImmutableHumanPlayer humanPlayer = new ImmutableHumanPlayer.Builder()
-                .takeMatchSticks(0)
-                .build();
-
-        when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(new ImmutableGame.Builder()
-                .id(GAME_ID)
-                .actualPlayer(humanPlayer)
-                .humanPlayer(humanPlayer)
-                .computerPlayer(new ComputerPlayer())
-                .gameStatus(GameStatus.TURN)
-                .matchStickHeap(10)
-                .build()));
+        Game startingGame = getGameWithStatus(TURN);
 
         try {
-            testee.triggerPlayerRound(GAME_ID, 2);
+            testee.triggerPlayerRound(startingGame, 2);
             fail();
         } catch (IllegalArgumentException ex) {
             assertThat(ex.getMessage()).isEqualTo("This operation is not allowed in status: " + GameStatus.TURN);
         }
+    }
 
+    private static Game getGameWithStatus(GameStatus gameStatus) {
+        ImmutableHumanPlayer humanPlayer = new ImmutableHumanPlayer.Builder()
+                .takeMatchSticks(0)
+                .build();
+
+        return new ImmutableGame.Builder()
+                .id(GAME_ID)
+                .actualPlayer(humanPlayer)
+                .humanPlayer(humanPlayer)
+                .computerPlayer(new ComputerPlayer())
+                .gameStatus(gameStatus)
+                .matchStickHeap(10)
+                .build();
     }
 }
