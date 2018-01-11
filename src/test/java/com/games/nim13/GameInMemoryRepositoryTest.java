@@ -1,7 +1,8 @@
 package com.games.nim13;
 
-import com.games.nim13.player.ComputerPlayer;
 import com.games.nim13.player.ImmutableHumanPlayer;
+import com.games.nim13.player.computer.ImmutableComputerPlayer;
+import com.games.nim13.player.computer.RandomTakeMatchStickStrategy;
 import com.games.nim13.statemachine.GameStatus;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,7 +59,9 @@ public class GameInMemoryRepositoryTest {
                 .gameStatus(GameStatus.TURN)
                 .actualPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
-                .computerPlayer(new ComputerPlayer())
+                .computerPlayer(new ImmutableComputerPlayer.Builder()
+                        .strategy(new RandomTakeMatchStickStrategy(new Random()))
+                        .build())
                 .build();
     }
 }

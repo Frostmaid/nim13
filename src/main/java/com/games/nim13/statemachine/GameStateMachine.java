@@ -3,10 +3,12 @@ package com.games.nim13.statemachine;
 import com.games.nim13.Game;
 import com.games.nim13.GameInMemoryRepository;
 import com.games.nim13.ImmutableGame;
-import com.games.nim13.player.ComputerPlayer;
 import com.games.nim13.player.HumanPlayer;
 import com.games.nim13.player.ImmutableHumanPlayer;
 import com.games.nim13.player.Player;
+import com.games.nim13.player.computer.ComputerPlayer;
+import com.games.nim13.player.computer.ImmutableComputerPlayer;
+import com.games.nim13.player.computer.RandomTakeMatchStickStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +36,9 @@ public class GameStateMachine {
                 .takeMatchSticks(0)
                 .build();
 
-        ComputerPlayer computerPlayer = new ComputerPlayer();
+        ComputerPlayer computerPlayer = new ImmutableComputerPlayer.Builder()
+                .strategy(new RandomTakeMatchStickStrategy(random))
+                .build();
 
         Game game = new ImmutableGame.Builder()
                 .id(UUID.randomUUID().toString())
@@ -127,6 +131,11 @@ public class GameStateMachine {
     //TODO maybe move to Match Stick Heap?
     private Game takeMatchSticks(Game game) {
         int numberOfMatchSticks = game.actualPlayer().takeMatchSticks();
+
+        if (invalidNumberOfMatchSticks(numberOfMatchSticks)) {
+            throw new IllegalArgumentException("Not allowed number of match sticks. You can only choose 1 to 3 match sticks.");
+        }
+
         if (game.matchStickHeap() - numberOfMatchSticks <= 0) {
             return new ImmutableGame.Builder()
                     .from(game)
@@ -138,6 +147,10 @@ public class GameStateMachine {
                     .matchStickHeap(game.matchStickHeap() - numberOfMatchSticks)
                     .build();
         }
+    }
+
+    private static boolean invalidNumberOfMatchSticks(int numberOfMatchSticks) {
+        return numberOfMatchSticks < 1 || numberOfMatchSticks > 3;
     }
 
     private Player getRandomFirstPlayer(HumanPlayer humanPlayer, ComputerPlayer computerPlayer) {
