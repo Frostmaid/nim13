@@ -1,5 +1,6 @@
 package com.games.nim13.player.computer;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.games.nim13.player.Player;
 import org.immutables.value.Value;
@@ -9,6 +10,7 @@ import org.immutables.value.Value;
 @JsonDeserialize(builder = ImmutableComputerPlayer.Builder.class)
 public interface ComputerPlayer extends Player {
 
+    @JsonIgnoreProperties
     TakeMatchStickStrategy strategy();
 
     default String name() {
