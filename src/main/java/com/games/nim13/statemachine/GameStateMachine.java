@@ -1,8 +1,8 @@
 package com.games.nim13.statemachine;
 
-import com.games.nim13.Game;
-import com.games.nim13.GameInMemoryRepository;
-import com.games.nim13.ImmutableGame;
+import com.games.nim13.db.Game;
+import com.games.nim13.db.GameInMemoryRepository;
+import com.games.nim13.db.ImmutableGame;
 import com.games.nim13.player.HumanPlayer;
 import com.games.nim13.player.ImmutableHumanPlayer;
 import com.games.nim13.player.Player;

@@ -1,8 +1,8 @@
 package com.games.nim13.rest;
 
-import com.games.nim13.Game;
-import com.games.nim13.GameInMemoryRepository;
-import com.games.nim13.ImmutableGame;
+import com.games.nim13.db.Game;
+import com.games.nim13.db.GameInMemoryRepository;
+import com.games.nim13.db.ImmutableGame;
 import com.games.nim13.player.ImmutableHumanPlayer;
 import com.games.nim13.player.computer.ImmutableComputerPlayer;
 import com.games.nim13.player.computer.RandomTakeMatchStickStrategy;
@@ -11,7 +11,6 @@ import com.games.nim13.statemachine.GameStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
 
@@ -85,7 +83,7 @@ public class GameControllerTest {
     public void takeMatchSticksNotFound() throws Exception {
         String gameId = "1-2-3";
         int numberOfMatchSticks = 2;
-        Game game = getGameWithId(gameId);
+
         when(repository.findById(gameId)).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/take_match_sticks/" + gameId + "/" + numberOfMatchSticks))

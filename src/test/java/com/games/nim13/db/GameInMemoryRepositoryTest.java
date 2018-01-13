@@ -1,4 +1,4 @@
-package com.games.nim13;
+package com.games.nim13.db;
 
 import com.games.nim13.player.ImmutableHumanPlayer;
 import com.games.nim13.player.computer.ImmutableComputerPlayer;

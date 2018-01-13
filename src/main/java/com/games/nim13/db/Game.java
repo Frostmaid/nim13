@@ -1,4 +1,4 @@
-package com.games.nim13;
+package com.games.nim13.db;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.games.nim13.player.Player;

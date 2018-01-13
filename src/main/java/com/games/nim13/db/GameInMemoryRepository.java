@@ -1,4 +1,4 @@
-package com.games.nim13;
+package com.games.nim13.db;
 
 import org.springframework.stereotype.Repository;
 
@@ -13,8 +13,8 @@ import static org.springframework.util.StringUtils.trimWhitespace;
 
 @Repository
 public class GameInMemoryRepository {
-    private final Map<String, Game> data = new ConcurrentHashMap<>();
 
+    private final Map<String, Game> data = new ConcurrentHashMap<>();
 
     public Optional<Game> findById(String id) {
         if (id == null || isEmpty(trimWhitespace(id))) {
@@ -32,6 +32,5 @@ public class GameInMemoryRepository {
     public void save(Game game) {
         data.put(game.id(), game);
     }
-
 
 }
