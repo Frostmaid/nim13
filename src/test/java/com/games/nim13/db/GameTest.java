@@ -83,5 +83,4 @@ public class GameTest {
         game.lastPlayer();
     }
 
-
 }
