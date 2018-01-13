@@ -57,7 +57,7 @@ public class GameInMemoryRepositoryTest {
                 .id(id)
                 .matchStickHeap(10)
                 .gameStatus(GameStatus.TURN)
-                .actualPlayer(humanPlayer)
+                .currentPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
                 .computerPlayer(new ImmutableComputerPlayer.Builder()
                         .strategy(new RandomTakeMatchStickStrategy(new Random()))

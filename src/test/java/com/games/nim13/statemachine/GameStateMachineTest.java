@@ -57,7 +57,7 @@ public class GameStateMachineTest {
         verify(random).nextInt(2);
 
         assertThat(game.gameStatus()).isEqualTo(WAITING_FOR_USER_INPUT);
-        assertThat(game.actualPlayer()).isInstanceOf(HumanPlayer.class);
+        assertThat(game.currentPlayer()).isInstanceOf(HumanPlayer.class);
         assertThat(game.matchStickHeap()).isEqualTo(13 - computerTakeMatchSticks);
     }
 
@@ -76,7 +76,7 @@ public class GameStateMachineTest {
         verify(random).nextInt(3);
 
         assertThat(resultGame.gameStatus()).isEqualTo(WAITING_FOR_USER_INPUT);
-        assertThat(resultGame.actualPlayer()).isInstanceOf(HumanPlayer.class);
+        assertThat(resultGame.currentPlayer()).isInstanceOf(HumanPlayer.class);
         assertThat(resultGame.matchStickHeap()).isEqualTo(startMatchStickHeap - humanTakeMatchSticks - computerTakeMatchSticks);
     }
 
@@ -124,7 +124,7 @@ public class GameStateMachineTest {
         verify(gameRepository).save(resultGame);
 
         assertThat(resultGame.gameStatus()).isEqualTo(END);
-        assertThat(resultGame.actualPlayer()).isInstanceOf(HumanPlayer.class);
+        assertThat(resultGame.currentPlayer()).isInstanceOf(HumanPlayer.class);
         assertThat(resultGame.victor().isPresent()).isTrue();
         assertThat(resultGame.victor().get()).isInstanceOf(ComputerPlayer.class);
         assertThat(resultGame.matchStickHeap()).isEqualTo(0);
@@ -145,7 +145,7 @@ public class GameStateMachineTest {
         verify(random).nextInt(3);
 
         assertThat(resultGame.gameStatus()).isEqualTo(END);
-        assertThat(resultGame.actualPlayer()).isInstanceOf(ComputerPlayer.class);
+        assertThat(resultGame.currentPlayer()).isInstanceOf(ComputerPlayer.class);
         assertThat(resultGame.victor().isPresent()).isTrue();
         assertThat(resultGame.victor().get()).isInstanceOf(HumanPlayer.class);
         assertThat(resultGame.matchStickHeap()).isEqualTo(0);
@@ -158,7 +158,7 @@ public class GameStateMachineTest {
 
         return new ImmutableGame.Builder()
                 .id(GAME_ID)
-                .actualPlayer(humanPlayer)
+                .currentPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
                 .computerPlayer(new ImmutableComputerPlayer.Builder()
                         .strategy(new RandomTakeMatchStickStrategy(random))

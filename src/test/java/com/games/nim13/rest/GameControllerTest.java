@@ -127,7 +127,7 @@ public class GameControllerTest {
                 .id(id)
                 .matchStickHeap(10)
                 .gameStatus(GameStatus.TURN)
-                .actualPlayer(humanPlayer)
+                .currentPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
                 .victor(humanPlayer)
                 .computerPlayer(new ImmutableComputerPlayer.Builder()

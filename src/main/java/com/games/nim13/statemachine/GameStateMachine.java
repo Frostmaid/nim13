@@ -23,6 +23,7 @@ public class GameStateMachine {
     private static final int START_NUMBER_OF_MATCH_STICKS = 13;
 
     private GameInMemoryRepository gameRepository;
+
     private Random random;
 
     @Autowired
@@ -40,16 +41,14 @@ public class GameStateMachine {
                 .strategy(new RandomTakeMatchStickStrategy(random))
                 .build();
 
-        Game game = new ImmutableGame.Builder()
+        return triggerRound(new ImmutableGame.Builder()
                 .id(UUID.randomUUID().toString())
                 .matchStickHeap(START_NUMBER_OF_MATCH_STICKS)
                 .humanPlayer(humanPlayer)
                 .computerPlayer(computerPlayer)
-                .actualPlayer(getRandomFirstPlayer(humanPlayer, computerPlayer))
+                .currentPlayer(getRandomFirstPlayer(humanPlayer, computerPlayer))
                 .gameStatus(EVALUATION)
-                .build();
-
-        return triggerRound(game);
+                .build());
     }
 
     public Game triggerPlayerRound(Game game, int numberOfMatchSticks) {
@@ -63,7 +62,7 @@ public class GameStateMachine {
 
         return triggerRound(new ImmutableGame.Builder()
                 .from(game)
-                .actualPlayer(humanPlayer)
+                .currentPlayer(humanPlayer)
                 .humanPlayer(humanPlayer)
                 .gameStatus(TURN)
                 .build());
@@ -87,14 +86,21 @@ public class GameStateMachine {
         }
     }
 
-    private Game end(Game game) {
+    private static Game end(Game game) {
         return new ImmutableGame.Builder()
                 .from(game)
                 .victor(game.lastPlayer())
                 .build();
     }
 
-    private Game evaluation(Game game) {
+    private static Game turn(Game game) {
+        return new ImmutableGame.Builder()
+                .from(takeMatchSticks(game))
+                .gameStatus(EVALUATION)
+                .build();
+    }
+
+    private static Game evaluation(Game game) {
         if (game.matchStickHeap() == 0) {
             return new ImmutableGame.Builder()
                     .from(game)
@@ -102,18 +108,22 @@ public class GameStateMachine {
                     .build();
         }
 
-        if (game.computerPlayer().equals(game.actualPlayer())) {
+        return switchCurrentPlayer(game);
+    }
+
+    private static Game switchCurrentPlayer(Game game) {
+        if (game.computerPlayer().equals(game.currentPlayer())) {
             return new ImmutableGame.Builder()
                     .from(game)
-                    .actualPlayer(game.humanPlayer())
+                    .currentPlayer(game.humanPlayer())
                     .gameStatus(WAITING_FOR_USER_INPUT)
                     .build();
         }
 
-        if (game.humanPlayer().equals(game.actualPlayer())) {
+        if (game.humanPlayer().equals(game.currentPlayer())) {
             return new ImmutableGame.Builder()
                     .from(game)
-                    .actualPlayer(game.computerPlayer())
+                    .currentPlayer(game.computerPlayer())
                     .gameStatus(TURN)
                     .build();
         }
@@ -121,16 +131,8 @@ public class GameStateMachine {
         throw new IllegalStateException();
     }
 
-    private Game turn(Game game) {
-        return new ImmutableGame.Builder()
-                .from(takeMatchSticks(game))
-                .gameStatus(EVALUATION)
-                .build();
-    }
-
-    //TODO maybe move to Match Stick Heap?
-    private Game takeMatchSticks(Game game) {
-        int numberOfMatchSticks = game.actualPlayer().takeMatchSticks();
+    private static Game takeMatchSticks(Game game) {
+        int numberOfMatchSticks = game.currentPlayer().takeMatchSticks();
 
         if (invalidNumberOfMatchSticks(numberOfMatchSticks)) {
             throw new IllegalArgumentException("Not allowed number of match sticks. You can only choose 1 to 3 match sticks.");

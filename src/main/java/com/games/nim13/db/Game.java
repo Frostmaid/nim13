@@ -22,17 +22,16 @@ public interface Game {
 
     Player computerPlayer();
 
-    //TODO maybe flag on player?
-    Player actualPlayer();
+    Player currentPlayer();
 
     Optional<Player> victor();
 
     default Player lastPlayer() {
-        if (actualPlayer() == humanPlayer()) {
+        if (currentPlayer().equals(humanPlayer())) {
             return computerPlayer();
         }
 
-        if (actualPlayer() == computerPlayer()) {
+        if (currentPlayer().equals(computerPlayer())) {
             return humanPlayer();
         }
 
