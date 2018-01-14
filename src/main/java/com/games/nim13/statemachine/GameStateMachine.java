@@ -8,7 +8,7 @@ import com.games.nim13.player.ImmutableHumanPlayer;
 import com.games.nim13.player.Player;
 import com.games.nim13.player.computer.ComputerPlayer;
 import com.games.nim13.player.computer.ImmutableComputerPlayer;
-import com.games.nim13.player.computer.RandomTakeMatchStickStrategy;
+import com.games.nim13.player.computer.SimpleTakeMatchStickStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,11 @@ import static com.games.nim13.statemachine.GameStatus.*;
 @Component
 public class GameStateMachine {
 
-    private static final int START_NUMBER_OF_MATCH_STICKS = 13;
+    public static final int START_NUMBER_OF_MATCH_STICKS = 13;
+
+    public static final int MAX_NUMBER_OF_MATCH_STICKS_TO_TAKE = 3;
+
+    public static final int MIN_NUMBER_OF_MATCH_STICKS_TO_TAKE = 1;
 
     private GameInMemoryRepository gameRepository;
 
@@ -38,7 +42,7 @@ public class GameStateMachine {
                 .build();
 
         ComputerPlayer computerPlayer = new ImmutableComputerPlayer.Builder()
-                .strategy(new RandomTakeMatchStickStrategy(random))
+                .strategy(new SimpleTakeMatchStickStrategy(START_NUMBER_OF_MATCH_STICKS))
                 .build();
 
         return triggerRound(new ImmutableGame.Builder()
@@ -121,9 +125,14 @@ public class GameStateMachine {
         }
 
         if (game.humanPlayer().equals(game.currentPlayer())) {
+            ImmutableComputerPlayer computerPlayer = new ImmutableComputerPlayer.Builder()
+                    .strategy(new SimpleTakeMatchStickStrategy(game.matchStickHeap()))
+                    .build();
+
             return new ImmutableGame.Builder()
                     .from(game)
-                    .currentPlayer(game.computerPlayer())
+                    .computerPlayer(computerPlayer)
+                    .currentPlayer(computerPlayer)
                     .gameStatus(TURN)
                     .build();
         }
@@ -152,7 +161,8 @@ public class GameStateMachine {
     }
 
     private static boolean invalidNumberOfMatchSticks(int numberOfMatchSticks) {
-        return numberOfMatchSticks < 1 || numberOfMatchSticks > 3;
+        return numberOfMatchSticks < MIN_NUMBER_OF_MATCH_STICKS_TO_TAKE
+                || numberOfMatchSticks > MAX_NUMBER_OF_MATCH_STICKS_TO_TAKE;
     }
 
     private Player getRandomFirstPlayer(HumanPlayer humanPlayer, ComputerPlayer computerPlayer) {

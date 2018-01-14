@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 
 import java.util.Random;
 
+import static com.games.nim13.statemachine.GameStateMachine.MAX_NUMBER_OF_MATCH_STICKS_TO_TAKE;
+
 public class RandomTakeMatchStickStrategy implements TakeMatchStickStrategy {
 
     private Random random;
@@ -14,6 +16,6 @@ public class RandomTakeMatchStickStrategy implements TakeMatchStickStrategy {
 
     @Override
     public int takeNumberOfMatchSticks() {
-        return random.nextInt(3) + 1;
+        return random.nextInt(MAX_NUMBER_OF_MATCH_STICKS_TO_TAKE) + 1;
     }
 }

@@ -20,6 +20,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Random;
 
+import static com.games.nim13.statemachine.GameStateMachine.MIN_NUMBER_OF_MATCH_STICKS_TO_TAKE;
+import static com.games.nim13.statemachine.GameStateMachine.START_NUMBER_OF_MATCH_STICKS;
 import static com.games.nim13.statemachine.GameStatus.*;
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,9 +49,7 @@ public class GameStateMachineTest {
 
     @Test
     public void initGame() {
-        int computerTakeMatchSticks = 2;
         when(random.nextInt(2)).thenReturn(1);
-        when(random.nextInt(3)).thenReturn(computerTakeMatchSticks - 1);
 
         Game game = testee.initGame();
 
@@ -58,22 +58,20 @@ public class GameStateMachineTest {
 
         assertThat(game.gameStatus()).isEqualTo(WAITING_FOR_USER_INPUT);
         assertThat(game.currentPlayer()).isInstanceOf(HumanPlayer.class);
-        assertThat(game.matchStickHeap()).isEqualTo(13 - computerTakeMatchSticks);
+        assertThat(game.matchStickHeap()).isEqualTo(START_NUMBER_OF_MATCH_STICKS - MIN_NUMBER_OF_MATCH_STICKS_TO_TAKE);
     }
 
     @Test
     public void triggerPlayerRound() {
         int startMatchStickHeap = 10;
         int humanTakeMatchSticks = 2;
-        int computerTakeMatchSticks = 2;
+        int computerTakeMatchSticks = MIN_NUMBER_OF_MATCH_STICKS_TO_TAKE;
 
         Game startingGame = getGameWithStatus(WAITING_FOR_USER_INPUT, startMatchStickHeap);
-        when(random.nextInt(3)).thenReturn(computerTakeMatchSticks - 1);
 
         Game resultGame = testee.triggerPlayerRound(startingGame, humanTakeMatchSticks);
 
         verify(gameRepository).save(resultGame);
-        verify(random).nextInt(3);
 
         assertThat(resultGame.gameStatus()).isEqualTo(WAITING_FOR_USER_INPUT);
         assertThat(resultGame.currentPlayer()).isInstanceOf(HumanPlayer.class);
@@ -134,15 +132,12 @@ public class GameStateMachineTest {
     public void computerEndsGame() {
         int startMatchStickHeap = 2;
         int humanTakeMatchSticks = 1;
-        int computerTakeMatchSticks = 2;
 
         Game startingGame = getGameWithStatus(WAITING_FOR_USER_INPUT, startMatchStickHeap);
-        when(random.nextInt(3)).thenReturn(computerTakeMatchSticks - 1);
 
         Game resultGame = testee.triggerPlayerRound(startingGame, humanTakeMatchSticks);
 
         verify(gameRepository).save(resultGame);
-        verify(random).nextInt(3);
 
         assertThat(resultGame.gameStatus()).isEqualTo(END);
         assertThat(resultGame.currentPlayer()).isInstanceOf(ComputerPlayer.class);
